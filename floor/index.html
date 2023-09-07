@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <script src="js/three.js"></script>
+    <script src="js/OrbitControls.js"></script>
+    <!-- <script src="js/GLTFLoader.js"></script> -->
+
+    <script>
+      //  const _VS = `
+      //  void main(){
+      //   vec3 scale = vec3(4.0, 1.0, 1.0);
+      //   gl_Position = projectionMatrix * modelViewMatrix * vec4(position * scale, 1.0);
+      //  }
+      //  `
+      const _VS = `
+  varying vec3 v_Normal;
+   void main(){
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    v_Normal = normal;
+   }
+   `;
+      const _FS = `
+   uniform vec3 sphereColour;
+  varying vec3 v_Normal;
+   void main(){
+    // gl_FragColor = vec4(v_Normal, 1.0);
+    gl_FragColor = vec4(sphereColour, 1.0);
+
+   }
+   `;
+
+      var scene = new THREE.Scene();
+      var camera = new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+      );
+
+      var renderer = new THREE.WebGLRenderer();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      
+      document.body.appendChild(renderer.domElement);
+
+      window.addEventListener("resize", function () {
+        var width = window.innerWidth;
+        var height = window.innerHeight;
+        renderer.setSize(width, height);
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+      });
+
+      // controls
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+      var geometry = new THREE.PlaneGeometry(100, 100, 1, 1);
+      var material = new THREE.MeshStandardMaterial({
+        color: 0x808080,
+        side: THREE.DoubleSide,
+      });
+      const plane = new THREE.Mesh(geometry, material);
+      plane.castShadow = false;
+      plane.receiveShadow = true;
+      plane.rotation.x = Math.PI / 2;
+      scene.add(plane);
+
+      // function addBox(){
+      // var geometry = new THREE.BoxGeometry(2,2,2);
+      // var material = new THREE.MeshStandardMaterial({color :0x111,side:THREE.DoubleSide})
+      // var box = new THREE.Mesh(geometry,material);
+      // box.castShadow = false;
+      // box.receiveShadow = true;
+      // box.position.set(0,1,0);
+      // scene.add(box)}
+      // const [x,y,z]= Array(3).fill().map(()=>THREE.MathUtils.randFloatSpread(100))
+      //   box.position.set(x,y,z)
+      // Array(200).fill().forEach(addBox)
+      var geometry = new THREE.SphereGeometry(2, 32, 32);
+      var material = new THREE.MeshStandardMaterial({
+        color: 0xffffff,
+        side: THREE.DoubleSide,
+      });
+      var sphere = new THREE.Mesh(geometry, material);
+      sphere.castShadow = true;
+      sphere.receiveShadow = false;
+      sphere.position.set(-10, 5, 0);
+      scene.add(sphere);
+
+      var geometry = new THREE.SphereGeometry(2, 32, 32);
+      var material = new THREE.ShaderMaterial({
+        uniforms: {
+          sphereColour: {
+            value: new THREE.Vector3(0, 0, 1),
+          },
+        },
+        vertexShader: _VS,
+        fragmentShader: _FS,
+      });
+      var sphere1 = new THREE.Mesh(geometry, material);
+      sphere1.castShadow = true;
+      sphere1.receiveShadow = false;
+      sphere1.position.set(10, 5, 0);
+      scene.add(sphere1);
+
+      camera.position.z = 3;
+      _totalTime = 0.0;
+      var materials = [
+        "img/skybox/front.png",
+        "img/skybox/back.png",
+        "img/skybox/up.png",
+        "img/skybox/down.png",
+        "img/skybox/right.png",
+        "img/skybox/left.png",
+      ];
+      cube = new THREE.CubeTextureLoader();
+      scene.background = cube.load(materials);
+
+      var light = new THREE.DirectionalLight({ color: 0xffffff });
+      light.position.set(100, 100, 100);
+      light.target.position.set(0, 0, 0);
+      light.castShadow = true;
+      light.shadow.bias = -0.01;
+      light.shadow.mapSize.width = 2048;
+      light.shadow.mapSize.height = 2048;
+      light.shadow.camera.near = 1.0;
+      light.shadow.camera.far = 500;
+      light.shadow.camera.left = 200;
+      light.shadow.camera.right = -200;
+      light.shadow.camera.top = 200;
+      light.shadow.camera.bottom = -200;
+      scene.add(light);
+
+      var ambientLight = new THREE.AmbientLight(0xffffff);
+      scene.add(ambientLight);
+      const helper = new THREE.CameraHelper(light.shadow.camera);
+      scene.add(helper);
+
+      // logic
+      var update = function () {
+        //  box.rotation.x += 0.01;
+        //  box.rotation.y += 0.005;
+      };
+      // draw Scene
+      var render = function () {
+        renderer.render(scene, camera);
+        function Step(timeElasped) {
+          const timeElapsedS = timeElasped * 0.001;
+          _totalTime += timeElapsedS;
+          const v = Math.sin(_totalTime * 2.0) * 0.5 + 0.5;
+          const c1 = new THREE.Vector3(1, 0, 0);
+          const c2 = new THREE.Vector3(0, 1, 0);
+          var sphereColour = c1.lerp(c2, v);
+          sphere1.material.uniforms.sphereColour.value = sphereColour;
+        }
+
+        // Step();
+      };
+      // run game loop(update,render,repeat)
+      var GameLoop = function () {
+        requestAnimationFrame(GameLoop);
+        update();
+        render();
+      };
+
+      GameLoop();
+    </script>
+  </body>
+</html>

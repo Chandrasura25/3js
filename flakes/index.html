@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+   <main>
+    <header>
+      <h1>Chandrasura</h1>
+      <p>welcome to my website</p>
+    </header>
+    <blockquote>i like designs now</blockquote>
+    <section>
+      <h2>manifesto</h2>
+      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt soluta porro fugiat vel asperiores nemo possimus ex quae magni odio consequuntur dolore et consectetur eligendi, doloremque ducimus ab dicta sequi.</p>
+      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt soluta porro fugiat vel asperiores nemo possimus ex quae magni odio consequuntur dolore et consectetur eligendi, doloremque ducimus ab dicta sequi.</p>
+      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt soluta porro fugiat vel asperiores nemo possimus ex quae magni odio consequuntur dolore et consectetur eligendi, doloremque ducimus ab dicta sequi.</p>
+    </section>
+    <section class="light">
+      <h2>projects</h2>
+      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt soluta porro fugiat vel asperiores nemo possimus ex quae magni odio consequuntur dolore et consectetur eligendi, doloremque ducimus ab dicta sequi.</p>
+      <h2>Accomplishments</h2>
+      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt soluta porro fugiat vel asperiores nemo possimus ex quae magni odio consequuntur dolore et consectetur eligendi, doloremque ducimus ab dicta sequi.</p>
+    </section>
+    <blockquote>the best way is through <strong>school</strong> </blockquote>
+    <section class="left">
+      <h2>work history</h2>
+      <h3>Todo with react</h3>
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consequuntur aliquam aspernatur, exercitationem assumenda, totam nostrum consectetur voluptate neque recusandae minus magnam iusto optio nesciunt, mollitia tempore ducimus vitae sapiente dicta.</p>
+      <h3>Todo with react</h3>
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consequuntur aliquam aspernatur, exercitationem assumenda, totam nostrum consectetur voluptate neque recusandae minus magnam iusto optio nesciunt, mollitia tempore ducimus vitae sapiente dicta.</p>
+      <h3>Todo with react</h3>
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consequuntur aliquam aspernatur, exercitationem assumenda, totam nostrum consectetur voluptate neque recusandae minus magnam iusto optio nesciunt, mollitia tempore ducimus vitae sapiente dicta.</p>
+    </section>
+    <blockquote><p>thanks for visiting</p></blockquote>
+  </main> 
+  <script src="js/three.js"></script>  
+  <script src="js/OrbitControls.js"></script>
+  <!-- <script src="js/GLTFLoader.js"></script> -->
+  
+  <script>
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(75,window.innerWidth /window.innerHeight,0.1,1000);
+
+    var renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth,window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+
+   window.addEventListener('resize', function(){
+    var width = window.innerWidth;
+    var height = window.innerHeight;
+    renderer.setSize(width,height);
+    camera.aspect  = width / height;
+    camera.updateProjectionMatrix();
+
+   })
+
+  // controls
+    controls= new THREE.OrbitControls(camera,renderer.domElement)
+
+    const geometry = new THREE.TorusGeometry(10,2,16,100);
+    const material = new THREE.MeshStandardMaterial({color :0xff6347})
+    const torus = new THREE.Mesh(geometry,material);
+    scene.add(torus)
+
+
+
+
+
+
+
+
+
+    //create the shape
+    // var geometry = new THREE.BoxGeometry(900,900,900); 
+
+    // var cubeMaterials = [
+    //   new THREE.MeshBasicMaterial({map: new THREE.TextureLoader().load('img/skybox/front.png'),side:THREE.DoubleSide}),//right
+    //   new THREE.MeshBasicMaterial({map: new THREE.TextureLoader().load('img/skybox/back.png'),side:THREE.DoubleSide}),//left
+    //   new THREE.MeshBasicMaterial({map: new THREE.TextureLoader().load('img/skybox/up.png'),side:THREE.DoubleSide}),//top
+    //   new THREE.MeshBasicMaterial({map: new THREE.TextureLoader().load('img/skybox/down.png'),side:THREE.DoubleSide}),//bottom
+    //   new THREE.MeshBasicMaterial({map: new THREE.TextureLoader().load('img/skybox/right.png'),side:THREE.DoubleSide}),//front
+    //   new THREE.MeshBasicMaterial({map: new THREE.TextureLoader().load('img/skybox/left.png'),side:THREE.DoubleSide})//back
+    // ]
+    // cube = new THREE.Mesh(geometry, cubeMaterials);
+
+    // var cube = new THREE.Mesh(geometry,material);
+    // scene.add(cube);
+
+    camera.position.z = 3;
+ 
+    var pointLight = new THREE.PointLight(0xffffff);
+    var ambientLight = new THREE.AmbientLight(0xffffff)
+
+    pointLight.position.set(20,20,20)
+    scene.add(pointLight,ambientLight);
+   
+    const lightHelper = new THREE.PointLightHelper(pointLight);
+    const gridHelper = new THREE.GridHelper(200,50)
+    scene.add(lightHelper,gridHelper);
+
+     function addStar(){
+      const geometry = new THREE.SphereGeometry(0.25,24,24);
+      const material = new THREE.MeshStandardMaterial({color:0xffffff})
+      const star = new THREE.Mesh(geometry,material);
+      const [x,y,z]= Array(3).fill().map(()=>THREE.MathUtils.randFloatSpread(100))
+      star.position.set(x,y,z)
+      scene.add(star)
+     }
+       Array(200).fill().forEach(addStar)
+
+      const spaceTexture = new THREE.TextureLoader().load('img/2.jpg');
+      scene.background = spaceTexture;
+  
+      const suraTexture = new THREE.TextureLoader().load('img/3.jpg')
+      const sura= new THREE.Mesh(
+        new THREE.BoxGeometry(2,2,2),
+        new THREE.MeshBasicMaterial({map:suraTexture,side:THREE.DoubleSide})
+      );
+      scene.add(sura)
+    
+     const moonTexture = new THREE.TextureLoader().load('img/skybox/up.png')
+      const normalTexture = new THREE.TextureLoader().load('img/skybox/down.png')
+     const moon = new THREE.Mesh(
+      new THREE.SphereGeometry(2,32,32),
+      new THREE.MeshStandardMaterial({
+        map:moonTexture,side:THREE.DoubleSide,
+        normalMap:normalTexture
+      })
+     )
+     scene.add(moon)
+     moon.position.z=7;
+     moon.position.setX(-10)
+
+      function moveCamera(){
+       const t = document.body.getBoundingClientRect().top;
+      moon.rotation.x += 0.05;
+      moon.rotation.y += 0.075;
+      moon.rotation.z += 0.05;
+
+      sura.rotation.x += 0.01;
+      sura.rotation.y += 0.01;
+
+      camera.position.z = t * -0.01;
+      camera.position.x = t * -0.0002;
+      camera.position.y = t * -0.0002;
+
+
+      }
+      document.body.onscroll = moveCamera;
+
+
+    // logic
+    var update =function(){
+       sura.rotation.x += 0.01;
+       sura.rotation.y += 0.005;
+      //  cube.rotation.x += 0.01;
+      //  cube.rotation.y += 0.005;
+      torus.rotation.x += 0.01;
+      torus.rotation.y += 0.005;
+      torus.rotation.z += 0.01;
+    
+    };
+    // draw Scene
+    var render = function(){
+        renderer.render(scene,camera);
+    }
+    // run game loop(update,render,repeat)
+    var GameLoop = function(){
+     requestAnimationFrame(GameLoop);
+     update();
+     render()
+    }
+    GameLoop();
+  </script>
+</body>
+</html>
